@@ -1,42 +1,60 @@
-module.exports = `
-📘 *PH03NIX COMMAND DIRECTORY*
+const helpMessage = `
+🔥 PH03NIX Integrated Command Environment
 
-━━━━━━━━━━━━━━━━━━
-🔗 *Connection*
-/pair – Generate a secure WhatsApp pairing link
-/unpair – Disconnect active WhatsApp session
-/status – View connection health
+You are now connected to the PH03NIX Digital Operations Core —
+a structured automation interface engineered to deliver guided interaction,
+controlled utilities, and an evolving command system.
 
-━━━━━━━━━━━━━━━━━━
-📤 *Messaging*
-/send <number> <message> – Send a WhatsApp message
-/sendgroup <group_id> <message> – Message a group
-/broadcast <message> – Controlled multi-chat broadcast
+This environment has been calibrated to ensure smooth communication
+between user input and PH03NIX response protocols.
 
-━━━━━━━━━━━━━━━━━━
-👥 *WhatsApp Group Commands*
-!tagall – Mention group members
-!admins – Show admin list
-!rules – Display group rules
-!welcome on|off – Toggle welcome messages
-!antilink on|off – Moderate links
+Every command you execute activates a defined operational routine.
+Use them intentionally.
 
-━━━━━━━━━━━━━━━━━━
-🤖 *Automation*
-!autoreply on|off – Toggle auto responses
-!away <message> – Set away message
-!back – Disable away mode
+━━━━━━━━━━━━━━━━━━━━
+⚙️ AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━━━
-🧠 *Utilities*
-!quote – Inspirational quote
-!joke – Light humor
-!time – Current time
-!calc <expression> – Calculator
+/start
+Initializes your session and confirms system readiness.
 
-━━━━━━━━━━━━━━━━━━
-👑 *Owner Only*
-/stats – System status
+/help
+Displays the PH03NIX command directory and operational overview.
+
+/complaint
+Opens the official PH03NIX Complaint & Feedback Portal.
+Use this to report issues, submit feedback, or communicate concerns
+through the structured reporting channel.
+
+━━━━━━━━━━━━━━━━━━━━
+🧠 SYSTEM PURPOSE
+━━━━━━━━━━━━━━━━━━━━
+
+PH03NIX is designed as a modular assistant —
+not just to reply, but to organize interactions into defined pathways.
+
+This ensures:
+• Clarity in communication
+• Centralized reporting structure
+• Expandable command architecture
+• Controlled feature deployment
+• Reliable user-system interaction
+
+The system will continue to evolve as new protocols are introduced.
+
+━━━━━━━━━━━━━━━━━━━━
+📡 STATUS REPORT
+━━━━━━━━━━━━━━━━━━━━
+
+Core Systems: ONLINE
+Command Router: ACTIVE
+User Link: VERIFIED
+Operational Mode: STABLE
+
+Further commands and capabilities will be deployed progressively
+under PH03NIX development cycles.
 
 POWERED BY PH03NIX🔥
 `;
+
+module.exports = helpMessage;
