@@ -1,62 +1,53 @@
-const TelegramBot = require('node-telegram-bot-api');
-const helpMessage = require('./help');
+const { OWNER_ID } = require("./config");
+const startMessage = require("./messages/start");
+const helpMessage = require("./messages/help");
+const { isOwner } = require("./utils/permissions");
 
-// 🔑 Replace with your bot token
-const token = "YOUR BOT_TOKEN";
+function registerCommands(bot) {
 
-// 🌐 Replace with your complaint site link
-const complaintLink = "https://joshuaaletilebyte.github.io/ph03nix-link-bot/";
+  // START COMMAND
+  bot.onText(/\/start/, (msg) => {
+    bot.sendMessage(msg.chat.id, startMessage, {
+      parse_mode: "Markdown"
+    });
+  });
 
-const bot = new TelegramBot(token, { polling: true });
+  // HELP COMMAND
+  bot.onText(/\/help/, (msg) => {
+    bot.sendMessage(msg.chat.id, helpMessage, {
+      parse_mode: "Markdown"
+    });
+  });
 
-console.log("PH03NIX Bot is running...");
+  // COMPLAINT COMMAND
+  bot.onText(/\/complaint/, (msg) => {
+    bot.sendMessage(
+      msg.chat.id,
+      `🛡 PH03NIX Complaint Channel
 
-// START COMMAND
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-
-    const startMessage = `
-🔥 PH03NIX System Initialized
-
-Connection established successfully.
-Command interface is now available.
-
-Type /help to view available operations.
-`;
-
-    bot.sendMessage(chatId, startMessage);
-});
-
-// HELP COMMAND
-bot.onText(/\/help/, (msg) => {
-    bot.sendMessage(msg.chat.id, helpMessage);
-});
-
-// COMPLAINT COMMAND (Redirect to Website)
-bot.onText(/\/complaint/, (msg) => {
-    const chatId = msg.chat.id;
-
-    bot.sendMessage(chatId,
-`To submit a complaint or report an issue,
-please use the official PH03NIX portal below:
-
-${complaintLink}
-
-Our system will process your submission accordingly.
+Submit your report securely here:
+https://joshuaaletile-byte.github.io/ph03nix-link-bot/
 
 POWERED BY PH03NIX🔥`
     );
-});
+  });
 
-// OPTIONAL: UNKNOWN COMMAND HANDLER
-bot.on('message', (msg) => {
-    if (!msg.text.startsWith('/')) {
-        bot.sendMessage(msg.chat.id,
-`Command not recognized.
+  // Optional owner-only command example
+  bot.onText(/\/stats/, (msg) => {
+    if (!isOwner(msg.from.id)) return bot.sendMessage(msg.chat.id, "⛔ Access denied.");
 
-Use /help to view available commands.
+    bot.sendMessage(
+      msg.chat.id,
+      "📊 System operational.\nAll core services are running.\n\nPOWERED BY PH03NIX🔥"
+    );
+  });
 
-POWERED BY PH03NIX🔥`
-        );
-    }
-});
+  // Unknown command handler
+  bot.on('message', (msg) => {
+    if (!msg.text.startsWith('/')) return;
+    // do nothing, or you can add unknown command reply
+  });
+}
+
+// ✅ Export function properly
+module.exports = registerCommands;
