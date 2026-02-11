@@ -1,31 +1,62 @@
-const { OWNER_ID } = require("./config");
-const startMessage = require("./messages/start");
-const helpMessage = require("./messages/help");
-const { isOwner } = require("./utils/permissions");
+const TelegramBot = require('node-telegram-bot-api');
+const helpMessage = require('./help');
 
-module.exports = function (bot) {
+// 🔑 Replace with your bot token
+const token = "8569130297:AAGBHJH0FdcT1S1MPlXH6mjqHoMNLZUoFn8";
 
-  bot.onText(/\/start/, (msg) => {
-    bot.sendMessage(msg.chat.id, startMessage, {
-      parse_mode: "Markdown"
-    });
-  });
+// 🌐 Replace with your complaint site link
+const complaintLink = "https://joshuaaletilebyte.github.io/ph03nix-link-bot/";
 
-  bot.onText(/\/help/, (msg) => {
-    bot.sendMessage(msg.chat.id, helpMessage, {
-      parse_mode: "Markdown"
-    });
-  });
+const bot = new TelegramBot(token, { polling: true });
 
-  bot.onText(/\/stats/, (msg) => {
-    if (!isOwner(msg.from.id)) {
-      return bot.sendMessage(msg.chat.id, "⛔ Access denied.");
-    }
+console.log("PH03NIX Bot is running...");
 
-    bot.sendMessage(
-      msg.chat.id,
-      "📊 System operational.\nAll core services are running.\n\nPOWERED BY PH03NIX🔥"
+// START COMMAND
+bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+
+    const startMessage = `
+🔥 PH03NIX System Initialized
+
+Connection established successfully.
+Command interface is now available.
+
+Type /help to view available operations.
+`;
+
+    bot.sendMessage(chatId, startMessage);
+});
+
+// HELP COMMAND
+bot.onText(/\/help/, (msg) => {
+    bot.sendMessage(msg.chat.id, helpMessage);
+});
+
+// COMPLAINT COMMAND (Redirect to Website)
+bot.onText(/\/complaint/, (msg) => {
+    const chatId = msg.chat.id;
+
+    bot.sendMessage(chatId,
+`To submit a complaint or report an issue,
+please use the official PH03NIX portal below:
+
+${complaintLink}
+
+Our system will process your submission accordingly.
+
+POWERED BY PH03NIX🔥`
     );
-  });
+});
 
-};
+// OPTIONAL: UNKNOWN COMMAND HANDLER
+bot.on('message', (msg) => {
+    if (!msg.text.startsWith('/')) {
+        bot.sendMessage(msg.chat.id,
+`Command not recognized.
+
+Use /help to view available commands.
+
+POWERED BY PH03NIX🔥`
+        );
+    }
+});
