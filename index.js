@@ -1,14 +1,17 @@
 const TelegramBot = require("node-telegram-bot-api");
-const { BOT_TOKEN } = require("./config");
-const registerBotHandlers = require("./bot");
+const registerCommands = require("./bot");
 
-if (!BOT_TOKEN) {
-  console.error("❌ BOT_TOKEN is missing");
-  process.exit(1);
+// We will store the token safely on Render (NOT inside code)
+const token = process.env.BOT_TOKEN;
+
+if (!token) {
+  throw new Error("BOT_TOKEN is missing!");
 }
 
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+// Start bot in polling mode
+const bot = new TelegramBot(token, { polling: true });
 
-console.log("🔥 PH03NIX LINK BOT IS LIVE");
+// Load commands
+registerCommands(bot);
 
-registerBotHandlers(bot);
+console.log("🔥 PH03NIX Bot is running...");
