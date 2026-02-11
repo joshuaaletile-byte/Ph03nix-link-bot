@@ -1,12 +1,12 @@
 {
   "name": "ph03nix-link-bot",
   "version": "1.0.0",
-  "description": "Telegram to WhatsApp control bot",
+  "description": "PH03NIX Telegram Control System",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.64.0"
   }
 }
