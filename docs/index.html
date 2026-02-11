@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PH03NIX Complaint Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>PH03NIX Complaint Portal</h1>
+  <p class="subtitle">
+    Submit your issue directly to the PH03NIX system review channel.
+  </p>
+
+  <form action="https://formspree.io/f/xvzbzdaw" method="POST">
+    <label>Full Name</label>
+    <input type="text" name="name" required>
+
+    <label>Email (optional)</label>
+    <input type="email" name="email">
+
+    <label>Complaint Type</label>
+    <select name="type">
+      <option>Bot Issue</option>
+      <option>Abuse Report</option>
+      <option>System Error</option>
+      <option>Other</option>
+    </select>
+
+    <label>Your Complaint</label>
+    <textarea name="message" rows="6" required></textarea>
+
+    <button type="submit">Submit Complaint</button>
+  </form>
+
+  <footer>
+    POWERED BY PH03NIX🔥
+  </footer>
+</div>
+
+</body>
+</html>
