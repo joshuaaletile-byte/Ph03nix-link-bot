@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PH03NIX Complaint Portal</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -9,32 +10,38 @@
 
 <div class="container">
   <h1>PH03NIX Complaint Portal</h1>
+
   <p class="subtitle">
-    Submit your issue directly to the PH03NIX system review channel.
+    Use this secure channel to report issues, abuse, or system errors.
+    All submissions are reviewed under PH03NIX moderation protocols.
   </p>
 
+  <!-- Replace the FORM ACTION with your Formspree link -->
   <form action="https://formspree.io/f/xvzbzdaw" method="POST">
+
     <label>Full Name</label>
     <input type="text" name="name" required>
 
-    <label>Email (optional)</label>
+    <label>Email (Optional)</label>
     <input type="email" name="email">
 
-    <label>Complaint Type</label>
-    <select name="type">
-      <option>Bot Issue</option>
-      <option>Abuse Report</option>
-      <option>System Error</option>
+    <label>Complaint Category</label>
+    <select name="category">
+      <option>Bot Malfunction</option>
+      <option>User Abuse Report</option>
+      <option>Command Failure</option>
+      <option>Security Concern</option>
       <option>Other</option>
     </select>
 
-    <label>Your Complaint</label>
+    <label>Describe Your Complaint</label>
     <textarea name="message" rows="6" required></textarea>
 
     <button type="submit">Submit Complaint</button>
   </form>
 
   <footer>
+    This channel is monitored continuously.<br>
     POWERED BY PH03NIX🔥
   </footer>
 </div>
