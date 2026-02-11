@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const helpMessage = require('./help');
 
 // 🔑 Replace with your bot token
-const token = "8569130297:AAGBHJH0FdcT1S1MPlXH6mjqHoMNLZUoFn8";
+const token = "YOUR BOT_TOKEN";
 
 // 🌐 Replace with your complaint site link
 const complaintLink = "https://joshuaaletilebyte.github.io/ph03nix-link-bot/";
