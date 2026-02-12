@@ -1,53 +1,50 @@
-const { OWNER_ID } = require("./config");
-const startMessage = require("./messages/start");
-const helpMessage = require("./messages/help");
-const { isOwner } = require("./utils/permissions");
+const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
 
-function registerCommands(bot) {
+// Import Commands
+const menu = require("./commands/menu");
+const complaint = require("./commands/complaint");
+const motivate = require("./commands/motivate");
+const joke = require("./commands/joke");
+const time = require("./commands/time");
+const rules = require("./commands/rules");
+const tagall = require("./commands/tagall");
+const poll = require("./commands/poll");
+const status = require("./commands/status");
+const about = require("./commands/about");
+const adminhelp = require("./commands/adminhelp");
 
-  // START COMMAND
-  bot.onText(/\/start/, (msg) => {
-    bot.sendMessage(msg.chat.id, startMessage, {
-      parse_mode: "Markdown"
-    });
-  });
+async function startBot() {
+  const { state, saveCreds } = await useMultiFileAuthState("session");
 
-  // HELP COMMAND
-  bot.onText(/\/help/, (msg) => {
-    bot.sendMessage(msg.chat.id, helpMessage, {
-      parse_mode: "Markdown"
-    });
-  });
+  const sock = makeWASocket({ auth: state });
 
-  // COMPLAINT COMMAND
-  bot.onText(/\/complaint/, (msg) => {
-    bot.sendMessage(
-      msg.chat.id,
-      `🛡 PH03NIX Complaint Channel
+  sock.ev.on("creds.update", saveCreds);
 
-Submit your report securely here:
-https://joshuaaletile-byte.github.io/ph03nix-link-bot/
+  console.log("PH03NIX BOT STARTED...");
 
-POWERED BY PH03NIX🔥`
-    );
-  });
+  sock.ev.on("messages.upsert", async ({ messages }) => {
+    const msg = messages[0];
+    if (!msg.message) return;
 
-  // Optional owner-only command example
-  bot.onText(/\/stats/, (msg) => {
-    if (!isOwner(msg.from.id)) return bot.sendMessage(msg.chat.id, "⛔ Access denied.");
+    const text =
+      msg.message.conversation ||
+      msg.message.extendedTextMessage?.text ||
+      "";
 
-    bot.sendMessage(
-      msg.chat.id,
-      "📊 System operational.\nAll core services are running.\n\nPOWERED BY PH03NIX🔥"
-    );
-  });
+    const command = text.trim().toLowerCase();
 
-  // Unknown command handler
-  bot.on('message', (msg) => {
-    if (!msg.text.startsWith('/')) return;
-    // do nothing, or you can add unknown command reply
+    if (command === "/menu") return menu(sock, msg);
+    if (command === "/complaint") return complaint(sock, msg);
+    if (command === "/motivate") return motivate(sock, msg);
+    if (command === "/joke") return joke(sock, msg);
+    if (command === "/time") return time(sock, msg);
+    if (command === "/rules") return rules(sock, msg);
+    if (command === "/tagall") return tagall(sock, msg);
+    if (command.startsWith("/poll")) return poll(sock, msg, text);
+    if (command === "/status") return status(sock, msg);
+    if (command === "/about") return about(sock, msg);
+    if (command === "/adminhelp") return adminhelp(sock, msg);
   });
 }
 
-// ✅ Export function properly
-module.exports = registerCommands;
+startBot();
