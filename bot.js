@@ -1,3 +1,4 @@
+const express = require("express");
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -8,17 +9,16 @@ const {
 const fs = require("fs");
 const pino = require("pino");
 
-// ✅ Ensure session folder exists (VERY IMPORTANT FOR RAILWAY)
+// ✅ Ensure session folder exists
 if (!fs.existsSync("./session")) {
   fs.mkdirSync("./session", { recursive: true });
 }
 
-// Load commands
-const commands = {};
-fs.readdirSync("./commands").forEach(file => {
-  const command = require(`./commands/${file}`);
-  commands[command.name] = command;
-});
+// Keep Railway alive
+const app = express();
+const PORT = process.env.PORT || 8080;
+app.get("/", (req, res) => res.send("PH03NIX BOT ACTIVE"));
+app.listen(PORT, () => console.log("🌐 Keep-alive server running on port", PORT));
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState("session");
@@ -32,35 +32,45 @@ async function startBot() {
     browser: ["PH03NIX BOT", "Chrome", "1.0"]
   });
 
-  console.log("🚀 PH03NIX BOT STARTED...");
-  console.log("📡 Connecting to WhatsApp...");
+  console.log("🚀 PH03NIX BOT STARTING...");
 
-  // Save session automatically
   sock.ev.on("creds.update", saveCreds);
 
-  // Handle connection updates
-  sock.ev.on("connection.update", (update) => {
-    const { connection, lastDisconnect, qr } = update;
+  let pairingRequested = false;
 
-    if (qr) {
-      console.log("📱 Scan the QR code from Railway logs to connect.");
+  sock.ev.on("connection.update", async (update) => {
+    const { connection, lastDisconnect } = update;
+
+    if (connection === "connecting") console.log("🔄 Connecting to WhatsApp...");
+    if (connection === "open") console.log("✅ WhatsApp Connected Successfully!");
+
+    if (!sock.authState.creds.registered && !pairingRequested && connection === "connecting") {
+      pairingRequested = true;
+
+      // Request text-based pairing code
+      try {
+        console.log("⏳ Preparing pairing request...");
+        const phoneNumber = await sock.requestPairingCode();
+        console.log("🔐 YOUR PAIRING CODE:", phoneNumber);
+        console.log("➡️ Open WhatsApp → Linked Devices → Link with Code → Type the code above");
+      } catch (err) {
+        console.log("⚠️ Pairing code request failed, retrying in 5s...");
+        setTimeout(() => startBot(), 5000);
+      }
     }
 
     if (connection === "close") {
-      const shouldReconnect =
-        lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+      const reason = lastDisconnect?.error?.output?.statusCode;
+      console.log("❌ Connection closed. Reason:", reason);
 
-      console.log("❌ Connection closed. Reconnecting:", shouldReconnect);
-
-      if (shouldReconnect) {
+      if (reason !== DisconnectReason.loggedOut) {
+        console.log("🔄 Reconnecting...");
         startBot();
       }
-    } else if (connection === "open") {
-      console.log("✅ WhatsApp Connected Successfully!");
     }
   });
 
-  // Listen for messages
+  // Message listener (example)
   sock.ev.on("messages.upsert", async (m) => {
     const msg = m.messages[0];
     if (!msg.message || msg.key.fromMe) return;
@@ -70,14 +80,12 @@ async function startBot() {
       msg.message.extendedTextMessage?.text ||
       "";
 
-    const args = text.trim().split(" ");
-    const commandName = args[0].toLowerCase();
-
-    if (commands[commandName]) {
-      commands[commandName].execute(sock, msg, args);
+    if (text.toLowerCase() === "/menu") {
+      await sock.sendMessage(msg.key.remoteJid, {
+        text: "🔥 PH03NIX ACTIVE\nType /help to explore commands\nPOWERED BY PH03NIX🔥"
+      });
     }
   });
 }
 
-// Start bot
 startBot();
