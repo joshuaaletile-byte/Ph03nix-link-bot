@@ -1,11 +1,11 @@
 {
-  "name": "ph03nix-link-bot",
+  "name": "ph03nix-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node bot.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.66.0"
+    "@whiskeysockets/baileys": "^6.6.0"
   }
 }
