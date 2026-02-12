@@ -1,14 +1,13 @@
 const express = require("express");
-const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys");
 
-// ✅ Keep Railway Alive
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.get("/", (req, res) => res.send("PH03NIX BOT ACTIVE"));
+// Keep Railway Alive
+app.get("/", (req, res) => res.send("PH03NIX BOT RUNNING"));
 app.listen(PORT, () => console.log("🌐 Server running on port", PORT));
 
-// ✅ Start WhatsApp Bot
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState("session");
 
@@ -19,35 +18,47 @@ async function startBot() {
 
   sock.ev.on("creds.update", saveCreds);
 
-  let pairingRequested = false;
-
   sock.ev.on("connection.update", async (update) => {
-    const { connection } = update;
+    const { connection, lastDisconnect } = update;
 
     if (connection === "connecting") {
       console.log("🔄 Connecting to WhatsApp...");
     }
 
     if (connection === "open") {
-      console.log("✅ WhatsApp Connected Successfully!");
+      console.log("✅ WhatsApp Connected!");
     }
 
-    // ✅ Ask for pairing ONLY after connection starts
-    if (!sock.authState.creds.registered && !pairingRequested) {
-      pairingRequested = true;
+    // ✅ ONLY request pairing AFTER 5 seconds delay
+    if (!sock.authState.creds.registered && connection === "connecting") {
+      console.log("⏳ Preparing pairing request...");
 
-      const phoneNumber = "2349169158769"; // <-- PUT YOUR NUMBER
+      setTimeout(async () => {
+        try {
+          const phoneNumber = "2349169158769"; // PUT YOUR NUMBER HERE
 
-      console.log("📱 Requesting Pairing Code...");
-      const code = await sock.requestPairingCode(phoneNumber);
+          console.log("📱 Requesting Pairing Code...");
+          const code = await sock.requestPairingCode(phoneNumber);
 
-      console.log("🔐 YOUR PAIRING CODE:", code);
-      console.log("➡️ Open WhatsApp > Linked Devices > Link with Code");
+          console.log("🔐 YOUR PAIRING CODE:", code);
+          console.log("➡️ Go to WhatsApp > Linked Devices > Link with Code");
+
+        } catch (err) {
+          console.log("⚠️ Pairing retrying in 5s...");
+          setTimeout(() => startBot(), 5000);
+        }
+      }, 5000); // ← THIS DELAY FIXES ERROR 428
     }
 
     if (connection === "close") {
-      console.log("❌ Connection closed. Restarting...");
-      startBot();
+      const reason = lastDisconnect?.error?.output?.statusCode;
+
+      console.log("❌ Connection closed. Reason:", reason);
+
+      if (reason !== DisconnectReason.loggedOut) {
+        console.log("🔄 Reconnecting...");
+        startBot();
+      }
     }
   });
 }
